@@ -44,13 +44,13 @@ class Dissasembler:
             if ed_opcode is not None:
                 instruction = self.ed_opcodes[ed_opcode]
 
-        if opcode == 0xCB:
+        elif opcode == 0xCB:
             offset= 1
             cb_opcode = self.read_byte(data, pc + 1)
             if cb_opcode is not None:
                 instruction = self.cb_opcodes[cb_opcode]
 
-        if opcode == 0xDD:
+        elif opcode == 0xDD:
             dd_opcode= self.read_byte(data, pc + 1)
 
             if dd_opcode == 0xCB:
@@ -62,7 +62,7 @@ class Dissasembler:
                 offset = 1
                 instruction = self.dd_opcodes[dd_opcode]
 
-        if opcode == 0xFD:
+        elif opcode == 0xFD:
             fd_opcode= self.read_byte(data, pc + 1)
 
             if fd_opcode == 0xCB:
@@ -74,38 +74,38 @@ class Dissasembler:
                 offset = 1
                 instruction = self.fd_opcodes[fd_opcode]
 
-        elif double_prefix and instruction:
+        else:
+            instruction = self.opcodes.get(opcode)
+
+        if double_prefix and instruction:
             if "{0:02X}" in instruction:
-                # 8-bit immediate value
                 byte = self.read_byte(data, pc + 2)
                 if byte is not None:
                     instruction = instruction.format(byte)
                     length = 4
 
-        else:
-            instruction = self.opcodes.get(opcode)
-            if instruction:
-                if "{0:04X}" in instruction:
-                    word = self.read_word(data, pc + 1 + offset)
-                    if word is not None:
-                        instruction = instruction.format(word)
-                        length = 3 + offset
+        elif instruction:
+            if "{0:04X}" in instruction:
+                word = self.read_word(data, pc + 1 + offset)
+                if word is not None:
+                    instruction = instruction.format(word)
+                    length = 3 + offset
 
-                elif "{0:02X}H$" in instruction:
-                    byte = self.read_byte(data, pc + 1 + offset)
-                    if byte is not None:
-                        if byte & (1<<7):
-                            byte -= 256
-                        instruction = instruction.format(pc + 2 + byte).replace('$','')
-                        length = 2 + offset
+            elif "{0:02X}H$" in instruction:
+                byte = self.read_byte(data, pc + 1 + offset)
+                if byte is not None:
+                    if byte & (1<<7):
+                        byte -= 256
+                    instruction = instruction.format(pc + 2 + byte).replace('$','')
+                    length = 2 + offset
 
-                elif "{0:02X}" in instruction:
-                    byte = self.read_byte(data, pc + 1 + offset)
-                    if byte is not None:
-                        instruction = instruction.format(byte)
-                        length = 2 + offset
-                else:
-                    length = 1 + offset
+            elif "{0:02X}" in instruction:
+                byte = self.read_byte(data, pc + 1 + offset)
+                if byte is not None:
+                    instruction = instruction.format(byte)
+                    length = 2 + offset
+            else:
+                length = 1 + offset
 
         return instruction, length
 
@@ -122,7 +122,11 @@ class Dissasembler:
         return result
 
 def main():
-    sample_code = bytes([0x3E,0x03,0x06,0x08,0x3A,0x00,0x03,0xC3,0x0E,0x00,0x76,0xC3,0x0A,0x00,0x3D,0x04,0x05,0x3D,0x18,0xF7])
+    #sample_code = bytes([0x3E,0x03,0x06,0x08,0x3A,0x00,0x03,0xC3,0x0E,0x00,0x76,0xC3,0x0A,0x00,0x3D,0x04,0x05,0x3D,0x18,0xF7])
+    sample_code = bytes([0x3A,0x00,0x10,0xFE,0x02,0xFA,0x32,0x00,0x4F,0x0D,0x51,0x06,0x00,0xDD,0x21,0x01,
+    0x10,0x1E,0x00,0xDD,0x7E,0x00,0xDD,0xBE,0x01,0xF2,0x33,0x00,0x04,0xDD,0x23,0x15,
+    0x7A,0xFE,0x00,0xC2,0x13,0x00,0x7B,0xFE,0x00,0xCA,0x32,0x00,0x79,0xFE,0x01,0xC2,
+    0x09,0x00,0x76,0xDD,0x66,0x01,0xDD,0x74,0x00,0xDD,0x77,0x01,0x1E,0x01,0xC3,0x1C,0x00])
 
     disassembler = Dissasembler()
     disassembled = disassembler.disassemble(sample_code)
