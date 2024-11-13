@@ -91,7 +91,7 @@ class Dissasembler:
                         instruction = instruction.format(word)
                         length = 3 + offset
 
-                elif "{0:02X}$" in instruction:
+                elif "{0:02X}H$" in instruction:
                     byte = self.read_byte(data, pc + 1 + offset)
                     if byte is not None:
                         if byte & (1<<7):
