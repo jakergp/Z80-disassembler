@@ -1,0 +1,49 @@
+{% load static %}
+
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Desensamblador</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
+            rel="stylesheet"
+        />
+
+        <link rel="stylesheet" href="{% static 'disassembler/style.css' %}">
+    </head>
+    <body>
+        <nav id="navegador">
+            <div id="texto">Desensamblador Z-80</div>
+        </nav>
+        <div id="contenedores">
+            <div class="contenedor" id="caja">
+                Ingresa el código
+                <form action="" method="get">
+                    <textarea
+                        class="area-texto"
+                        id="codigo-original"
+                        name="original"
+                    >{{original_code}}</textarea>
+                    <div id="contenedor-boton">
+                        <button id="boton">Desensamblar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="contenedor">
+                Código desensamblado
+                <textarea
+                    class="area-texto"
+                    id="codigo-desensamblado"
+                    disabled
+                    name="desensamblado"
+                >{{disassembled_code}}
+                </textarea>
+            </div>
+        </div>
+    </body>
+</html>
