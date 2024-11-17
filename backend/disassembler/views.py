@@ -17,4 +17,4 @@ def disassemble(request):
         for line in code_list:
            disassembled_code += line + '\n'
 
-        return render(request, "disassembler/index.html", {"original_code": hex_code, "disassembled_code": disassembled_code})
+        return render(request, "index.html", {"original_code": hex_code, "disassembled_code": disassembled_code})
