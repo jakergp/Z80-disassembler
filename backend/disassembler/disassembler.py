@@ -12,7 +12,7 @@ class Dissasembler:
 
     def read_opcodes_csv(self, name):
         map = {}
-        with open('staticfiles/csv/'+name+'.csv') as file:
+        with open('static/csv/'+name+'.csv') as file:
            csvFile = csv.reader(file, delimiter=';')
            for lines in csvFile:
                map[int(lines[0], 16)] = lines[1]
