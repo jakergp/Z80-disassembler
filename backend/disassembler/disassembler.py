@@ -12,7 +12,7 @@ class Dissasembler:
 
     def read_opcodes_csv(self, name):
         map = {}
-        with open('csv/'+name+'.csv') as file:
+        with open('../csv/'+name+'.csv') as file:
            csvFile = csv.reader(file, delimiter=';')
            for lines in csvFile:
                map[int(lines[0], 16)] = lines[1]
@@ -48,7 +48,7 @@ class Dissasembler:
             offset= 1
             cb_opcode = self.read_byte(data, pc + 1)
             if cb_opcode is not None:
-                instruction = self.cb_opcodes[cb_opcode]
+                instruction = self.cb_opcodes.get(cb_opcode)
 
         elif opcode == 0xDD:
             dd_opcode= self.read_byte(data, pc + 1)
@@ -56,11 +56,11 @@ class Dissasembler:
             if dd_opcode == 0xCB:
                 double_prefix = True
                 ddcb_opcode = self.read_byte(data, pc+3)
-                instruction = self.ddcb_opcodes[ddcb_opcode]
+                instruction = self.ddcb_opcodes.get(ddcb_opcode)
 
             elif dd_opcode is not None:
                 offset = 1
-                instruction = self.dd_opcodes[dd_opcode]
+                instruction = self.dd_opcodes.get(dd_opcode)
 
         elif opcode == 0xFD:
             fd_opcode= self.read_byte(data, pc + 1)
@@ -68,11 +68,11 @@ class Dissasembler:
             if fd_opcode == 0xCB:
                 double_prefix = True
                 fdcb_opcode = self.read_byte(data, pc+3)
-                instruction = self.fdcb_opcodes[fdcb_opcode]
+                instruction = self.fdcb_opcodes.get(fdcb_opcode)
 
             elif fd_opcode is not None:
                 offset = 1
-                instruction = self.fd_opcodes[fd_opcode]
+                instruction = self.fd_opcodes.get(fd_opcode)
 
         else:
             instruction = self.opcodes.get(opcode)
@@ -116,20 +116,10 @@ class Dissasembler:
         while pc < len(data):
             instruction, length = self.disassemble_instruction(data, pc)
             if instruction:
-                result.append(f"{start_address + pc:04X}: {instruction}")
+                result.append(f"{instruction}")
                 pc += length
             else:
                 result.append("Instrucción invaliida")
                 pc += 1;
 
         return result
-
-def main():
-    sample_code = bytes([0xED, 0x00])
-
-    disassembler = Dissasembler()
-    disassembled = disassembler.disassemble(sample_code)
-    for line in disassembled:
-        print(line)
-
-main()

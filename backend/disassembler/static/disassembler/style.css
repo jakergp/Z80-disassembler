@@ -1,15 +1,15 @@
-body{
+body {
     height: 100vh;
     width: 100%;
     margin: 0;
+    font-size: 1.5rem;
     font-family: "Geist Mono", monospace;
 }
-.contenedor{
+.contenedor {
     width: 40%;
     height: 100%;
-
 }
-#contenedores{
+#contenedores {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -19,18 +19,20 @@ body{
     margin-left: auto;
     margin-right: auto;
 }
-.contenedor-texto{
+.contenedor-texto {
     justify-content: center;
     text-align: center;
     height: 80%;
     width: 100%;
 }
-.area-texto{
+.area-texto {
+    color: black;
     justify-content: center;
     resize: none;
-    border: 1px black solid;
+    border: 2px black solid;
     width: 100%;
-    height: 100%;
+    height: 80%;
+    font-size: 1.4rem;
 }
 #navegador {
     display: grid;
@@ -39,24 +41,31 @@ body{
     text-align: center;
     background-color: black;
     color: white;
-    font-size: 250%;
+    font-size: 4rem;
 }
-#texto{
-    vertical-align:middle;
+#texto {
+    vertical-align: middle;
     text-align: center;
     align-items: first baseline;
 }
-#contenedor-boton{
+#contenedor-boton {
     padding-top: 10px;
 }
-#boton{
-    font-family: "Geist Mono", monospace;
+#boton {
     background-color: rgb(245, 224, 228);
+    border: 1px black solid;
+    font-size: 1rem;
     border-radius: 5px;
-    padding: 5px;
+    padding: 8px;
     height: 35px;
-    cursor:pointer;
+    margin-top: 15px;
+    cursor: pointer;
 }
-#boton:hover{
+
+#boton:hover {
     background-color: rgb(191, 219, 233);
+}
+
+form {
+    height: 100%;
 }
