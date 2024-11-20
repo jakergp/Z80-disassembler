@@ -119,7 +119,7 @@ class Dissasembler:
                 result.append(f"{instruction}")
                 pc += length
             else:
-                result.append("Instrucción invaliida")
+                result.append("Instrucción inválida")
                 pc += 1;
 
         return result
