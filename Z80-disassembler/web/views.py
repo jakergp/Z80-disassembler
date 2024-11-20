@@ -8,7 +8,12 @@ def disassemble(request):
         hex_code = request.GET.get('original')
         if hex_code is None:
             hex_code=""
+
         code = hex_reader(hex_code)
+
+        if code is None:
+            return render(request, "index.html", {"original_code": hex_code, "disassembled_code": "El código proporcionado es inválido"})
+
         disassembler = Dissasembler()
 
         code_list = disassembler.disassemble(code)
