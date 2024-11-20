@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse
-from disassembler.hex_reader import hex_reader
-from disassembler.disassembler import Dissasembler
+from core.hex_reader import hex_reader
+from core.disassembler import Dissasembler
 
 # Create your views here.
 def disassemble(request):
