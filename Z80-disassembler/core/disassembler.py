@@ -111,16 +111,10 @@ class Dissasembler:
                     if byte & (1<<7):
                         byte -= 256
                     word = byte + pc + 2
-                    if jump:
-                        if self.eti.get(word) is None:
-                            self.eti[word] = self.eti_number;
-                            self.eti_number += 1;
-                        instruction = instruction.replace('{0:02X}H$', 'eti' + str(self.eti[word]))
-                        length = 3 + offset
-                    else:
-                        instruction = instruction.format(word)
-                        length = 3 + offset
-                    instruction = instruction.format(pc + 2 + byte).replace('$','')
+                    if self.eti.get(word) is None:
+                        self.eti[word] = self.eti_number;
+                        self.eti_number += 1;
+                    instruction = instruction.replace('{0:02X}H$', 'eti' + str(self.eti[word]))
                     length = 2 + offset
 
             elif "{0:02X}" in instruction:
@@ -141,7 +135,7 @@ class Dissasembler:
         while pc < len(data):
             instruction, length = self.disassemble_instruction(data, pc)
             if instruction:
-                result.append(f"{"%eti%" +instruction}")
+                result.append("%eti%" +instruction)
                 address.append(pc)
                 pc += length
             else:
