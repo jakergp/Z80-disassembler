@@ -9,6 +9,8 @@ class Dissasembler:
         self.ddcb_opcodes = self.read_opcodes_csv("ddcb_opcodes")
         self.fd_opcodes = self.read_opcodes_csv("fd_opcodes")
         self.fdcb_opcodes = self.read_opcodes_csv("fdcb_opcodes")
+        self.eti = {}
+        self.eti_number = 1
 
     def read_opcodes_csv(self, name):
         map = {}
@@ -36,6 +38,7 @@ class Dissasembler:
         instruction = None
         length = 1
         offset = 0
+        jump = False
         double_prefix = False
 
         if opcode == 0xED:
@@ -85,17 +88,38 @@ class Dissasembler:
                     length = 4
 
         elif instruction:
+            if "JR" in instruction or "JP" in instruction:
+                jump = True
+
             if "{0:04X}" in instruction:
                 word = self.read_word(data, pc + 1 + offset)
                 if word is not None:
-                    instruction = instruction.format(word)
-                    length = 3 + offset
+                    if jump:
+                        if self.eti.get(word) is None:
+                            self.eti[word] = self.eti_number;
+                            self.eti_number += 1;
+                        instruction = instruction.replace('{0:04X}H', 'eti' + str(self.eti[word]))
+                        length = 3 + offset
+                    else:
+                        instruction = instruction.format(word)
+                        length = 3 + offset
+
 
             elif "{0:02X}H$" in instruction:
                 byte = self.read_byte(data, pc + 1 + offset)
                 if byte is not None:
                     if byte & (1<<7):
                         byte -= 256
+                    word = byte + pc + 2
+                    if jump:
+                        if self.eti.get(word) is None:
+                            self.eti[word] = self.eti_number;
+                            self.eti_number += 1;
+                        instruction = instruction.replace('{0:02X}H$', 'eti' + str(self.eti[word]))
+                        length = 3 + offset
+                    else:
+                        instruction = instruction.format(word)
+                        length = 3 + offset
                     instruction = instruction.format(pc + 2 + byte).replace('$','')
                     length = 2 + offset
 
@@ -112,14 +136,24 @@ class Dissasembler:
     def disassemble(self, data, start_address=0):
         pc = 0
         result = []
+        address = []
 
         while pc < len(data):
             instruction, length = self.disassemble_instruction(data, pc)
             if instruction:
-                result.append(f"{instruction}")
+                result.append(f"{"%eti%" +instruction}")
+                address.append(pc)
                 pc += length
             else:
                 result.append("Instrucción inválida")
+                address.append(pc)
                 pc += 1;
+
+        for i in range(len(result)):
+            line = result[i]
+            if self.eti.get(address[i]) is not None:
+                result[i] = line.replace('%eti%', 'eti' + str(self.eti.get(address[i])) + ': ')
+            else:
+                result[i] = line.replace('%eti%', '      ')
 
         return result
